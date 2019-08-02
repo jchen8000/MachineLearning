@@ -10,8 +10,8 @@ from scipy.stats import multivariate_normal
 
 
 #Create grid and multivariate normal
-x = np.linspace(-10,10,500)
-y = np.linspace(-10,10,500)
+x = np.linspace(-10,10,50)
+y = np.linspace(-10,10,50)
 X, Y = np.meshgrid(x,y)
 pos = np.empty(X.shape + (2,))
 pos[:, :, 0] = X; pos[:, :, 1] = Y
