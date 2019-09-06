@@ -6,6 +6,7 @@ from keras.layers import BatchNormalization, Activation, Embedding, ZeroPadding2
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.convolutional import UpSampling2D, Conv2D
 from keras.models import Sequential, Model
+from keras.models import model_from_json
 from keras.optimizers import Adam
 
 import matplotlib.pyplot as plt
@@ -50,6 +51,9 @@ class CGAN():
         # The combined model  (stacked generator and discriminator)
         # Trains generator to fool discriminator
         self.combined = Model([noise, label], valid)
+        #self.load_model()
+
+
         self.combined.compile(loss=['binary_crossentropy'],
             optimizer=optimizer)
 
@@ -195,12 +199,28 @@ class CGAN():
         save(self.generator, "cgan_generator")
         save(self.discriminator, "cgan_discriminator")
 
+    def load_model(self):
+        def load(model_name):
+            model_path = "saved_model/%s.json" % model_name
+            weights_path = "saved_model/%s_weights.hdf5" % model_name
+            json_file = open(model_path, 'r')
+            loaded_model_json = json_file.read()
+            json_file.close()
+            loaded_model = model_from_json(loaded_model_json)
+            loaded_model.load_weights(weights_path)
+            return loaded_model
+        self.generator = load("cgan_generator_40000")
+        self.discriminator = load("cgan_discriminator_40000")
+
+
 
 if __name__ == '__main__':
     cgan = CGAN()
+
     startTime = datetime.now()
     print("Start Time", startTime.strftime('%Y-%m-%d %H:%M:%S') )
 
-    cgan.train(epochs=40000, batch_size=32, sample_interval=2000)
+    cgan.train(epochs=100000, batch_size=32, sample_interval=10000)
+
     print("Start Time", startTime.strftime('%Y-%m-%d %H:%M:%S') )
     print("End Time", datetime.now().strftime('%Y-%m-%d %H:%M:%S') )
